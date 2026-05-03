@@ -8,3 +8,4 @@ Personal homelab infrastructure built on Proxmox (Hetzner Cloud), accessed via W
 1. [Proxmox Setup](docs/01-proxmox-setup.md)
 2. [Laptop Setup](docs/02-laptop-setup.md)
 3. [WireGuard VPN](docs/03-wireguard.md)
+4. [OpenTofu Backend](docs/04-opentofu-backend.md)
