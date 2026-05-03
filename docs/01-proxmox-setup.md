@@ -50,6 +50,13 @@ Verify no IPv6 addresses are assigned
 ip addr | grep inet6
 ```
 
+Force IPv4 preference so DNS resolution doesn't attempt IPv6 first (avoids ~2min timeouts in Proxmox tasks):
+
+```bash
+echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf
+systemctl restart pvedaemon pveproxy
+```
+
 ## Automatic Security Updates
 
 ```bash

@@ -8,3 +8,8 @@ terraform {
     }
   }
 }
+
+provider "proxmox" {
+  endpoint = "https://10.25.0.1:8006/"
+  insecure = true
+}

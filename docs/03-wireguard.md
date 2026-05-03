@@ -39,7 +39,7 @@ PrivateKey = <mac_private_key>
 [Peer]
 PublicKey = <server_public_key>
 Endpoint = <hetzner_server_ip>:51820
-AllowedIPs = 10.25.0.0/24
+AllowedIPs = 10.25.0.0/24, 10.50.0.0/24
 PersistentKeepalive = 25
 ```
 
