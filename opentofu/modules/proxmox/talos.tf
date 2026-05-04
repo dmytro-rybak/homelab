@@ -2,12 +2,14 @@ resource "proxmox_download_file" "talos_iso" {
   node_name    = var.node_name
   content_type = "iso"
   datastore_id = "local"
-  file_name    = "talos-v${var.talos_version}-metal-amd64.iso"
-  url          = "https://github.com/siderolabs/talos/releases/download/v${var.talos_version}/metal-amd64.iso"
+  file_name    = "talos-v${var.talos_version}-${substr(local.talos_schematic_id, 0, 12)}-metal-amd64.iso"
+  url          = local.talos_iso_url
 }
 
 resource "proxmox_virtual_environment_vm" "talos" {
   for_each = local.talos_nodes
+
+  depends_on = [proxmox_sdn_applier.this]
 
   node_name     = var.node_name
   vm_id         = each.value.vm_id
@@ -25,7 +27,7 @@ resource "proxmox_virtual_environment_vm" "talos" {
   }
 
   network_device {
-    bridge = var.internal_bridge
+    bridge = proxmox_sdn_vnet.internal.id
   }
 
   disk {
@@ -49,6 +51,7 @@ resource "proxmox_virtual_environment_vm" "talos" {
   }
 
   agent {
-    enabled = false
+    enabled = true
+    timeout = "15m"
   }
 }

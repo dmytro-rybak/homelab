@@ -9,7 +9,7 @@ output "talosconfig" {
     context = var.cluster_name
     contexts = {
       (var.cluster_name) = {
-        endpoints = [var.controlplane_ip]
+        endpoints = [var.node_initial_ips[var.controlplane_name]]
         ca        = talos_machine_secrets.this.client_configuration.ca_certificate
         crt       = talos_machine_secrets.this.client_configuration.client_certificate
         key       = talos_machine_secrets.this.client_configuration.client_key

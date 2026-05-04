@@ -3,11 +3,12 @@ output "kubeconfig" {
   sensitive = true
 }
 
-output "talos_mac_addresses" {
-  value = module.proxmox.talos_mac_addresses
-}
-
 output "talosconfig" {
   value     = module.talos.talosconfig
   sensitive = true
+}
+
+output "talos_node_ips" {
+  description = "Talos node IPs (DHCP from Proxmox IPAM, sticky per MAC)"
+  value       = module.proxmox.talos_node_ips
 }

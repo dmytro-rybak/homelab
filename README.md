@@ -1,6 +1,6 @@
 # Homelab
 
-Personal homelab infrastructure built on Proxmox (Hetzner Cloud), accessed via WireGuard VPN, with Kubernetes planned via Talos.
+Personal homelab infrastructure built on Proxmox (Hetzner Cloud), accessed via WireGuard VPN, with Kubernetes via Talos Linux + Cilium.
 
 ## Network
 
@@ -11,15 +11,13 @@ WireGuard VPN — `10.25.0.0/24`
 | 10.25.0.1   | Proxmox  |
 | 10.25.0.2   | MacBook  |
 
-Internal LAN — `10.50.0.0/24` (bridge `vmbr1`)
+Internal LAN — `10.50.0.0/24` (Proxmox SDN: zone `homelab`, vnet `internal`)
 
-| IP          | Host                 |
-| ----------- | -------------------- |
-| 10.50.0.1   | PowerDNS (LXC 100)   |
-| 10.50.0.10  | Talos control plane  |
-| 10.50.0.11  | Talos worker 1       |
-| 10.50.0.12  | Talos worker 2       |
-| 10.50.0.254 | Proxmox (gateway)    |
+| IP          | Host                    |
+| ----------- | ----------------------- |
+| 10.50.0.1   | PowerDNS (LXC 100)      |
+| 10.50.0.20+ | Talos nodes (DHCP/IPAM) |
+| 10.50.0.254 | Proxmox (gateway)       |
 
 ## Docs
 

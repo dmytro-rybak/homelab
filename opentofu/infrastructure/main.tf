@@ -1,17 +1,23 @@
 module "proxmox" {
   source = "../modules/proxmox"
 
-  node_name       = var.node_name
-  talos_version   = var.talos_version
-  internal_bridge = var.internal_bridge
-  gateway         = var.gateway
-  dns_ip          = var.dns_ip
+  node_name        = var.node_name
+  talos_version    = var.talos_version
+  sdn_zone         = var.sdn_zone
+  sdn_vnet         = var.sdn_vnet
+  subnet_cidr      = var.subnet_cidr
+  gateway          = var.gateway
+  dns_ip           = var.dns_ip
+  dhcp_dns_server  = var.dhcp_dns_server
+  dhcp_range_start = var.dhcp_range_start
+  dhcp_range_end   = var.dhcp_range_end
 }
 
 module "talos" {
   source = "../modules/talos"
 
-  controlplane_ip = var.controlplane_ip
-  worker_nodes    = var.worker_nodes
-  nameservers     = var.nameservers
+  controlplane_name = var.controlplane_name
+  worker_nodes      = toset(var.worker_nodes)
+  nameservers       = var.nameservers
+  node_initial_ips  = module.proxmox.talos_node_ips
 }

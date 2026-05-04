@@ -3,18 +3,19 @@ variable "cluster_name" {
   default = "homelab-admin"
 }
 
-variable "controlplane_ip" {
-  type = string
+variable "controlplane_name" {
+  type        = string
+  description = "Name of the control plane node (key in node_initial_ips)"
 }
 
 variable "worker_nodes" {
-  type        = map(string)
-  description = "Map of worker name to IP address"
+  type        = set(string)
+  description = "Set of worker node names (keys in node_initial_ips)"
 }
 
-variable "gateway" {
-  type    = string
-  default = "10.50.0.254"
+variable "node_initial_ips" {
+  type        = map(string)
+  description = "Map of node name to DHCP-assigned IP (from QEMU agent)"
 }
 
 variable "install_disk" {

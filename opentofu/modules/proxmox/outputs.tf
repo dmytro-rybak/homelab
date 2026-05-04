@@ -1,6 +1,15 @@
-output "talos_mac_addresses" {
+output "talos_node_ips" {
+  description = "DHCP-assigned IPs of Talos VMs (reported by QEMU guest agent)"
   value = {
     for name, vm in proxmox_virtual_environment_vm.talos :
-    name => vm.network_device[0].mac_address
+    name => [
+      for ip in flatten(vm.ipv4_addresses) :
+      ip if ip != "127.0.0.1" && !startswith(ip, "169.254.")
+    ][0]
   }
+}
+
+output "vnet_id" {
+  description = "SDN VNet ID (used as bridge name)"
+  value       = proxmox_sdn_vnet.internal.id
 }

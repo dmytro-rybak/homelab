@@ -19,7 +19,7 @@ brew install talosctl kubectl helm cilium-cli opentofu
   - Server: `10.25.0.1` (Proxmox host)
   - Client: `10.25.0.2` (MacBook)
 - **SSH access**: `ssh homelab` (via WireGuard tunnel, see `~/.ssh/config`)
-- **Internal VM network**: `10.50.0.0/24` on bridge `vmbr1`; Proxmox host (`10.50.0.254`) runs dnsmasq for DHCP + DNS forwarding + NAT
+- **Internal VM network**: `10.50.0.0/24` on Proxmox SDN simple zone `homelab` / vnet `internal`; SDN provides DHCP (auto-managed dnsmasq) and SNAT. Gateway `10.50.0.254`
 - **Hetzner firewall**: Stateless — blocks return traffic by default; rules added for TCP ACK, UDP src 53, UDP src 123, UDP dst 51820
 
 ## Repository Structure
@@ -35,7 +35,7 @@ docs/               # Documentation
 
 OpenTofu is the IaC tool (open-source Terraform fork). State files, tfvars, and `.terraform/` directories are gitignored — never commit these. The `opentofu/` directory is the canonical location for all IaC code.
 
-Infrastructure apply is split into two stages (see `docs/06-talos-cluster.md`): Stage 1 creates VMs, Stage 2 pushes Talos configs after dnsmasq DHCP is manually configured on the Proxmox host. Cilium is installed separately via Helm after the cluster bootstraps.
+A single `tofu apply` provisions the SDN, downloads a custom Talos ISO from [factory.talos.dev](https://factory.talos.dev) with the QEMU guest agent extension, creates the DNS LXC and Talos VMs, reads each VM's DHCP IP via the agent (sticky per MAC via Proxmox IPAM), pushes Talos configs, and bootstraps the cluster. See `docs/06-talos-cluster.md`. Cilium is installed separately via Helm afterwards.
 
 ## Security Notes
 
