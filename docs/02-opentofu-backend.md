@@ -1,4 +1,4 @@
-# 04 - OpenTofu Backend
+# 02 - OpenTofu Backend
 
 State is stored in Hetzner Object Storage using the S3 backend.
 

@@ -2,18 +2,21 @@ terraform {
   required_version = ">= 1.11.0" # OpenTofu
 
   required_providers {
-    proxmox = {
-      source  = "bpg/proxmox"
-      version = "~> 0.105"
+    hcloud = {
+      source  = "hetznercloud/hcloud"
+      version = "~> 1.62"
     }
     talos = {
       source  = "siderolabs/talos"
       version = "~> 0.11"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 4.0"
+    }
   }
 }
 
-provider "proxmox" {
-  endpoint = "https://10.25.0.1:8006/"
-  insecure = true
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token
 }

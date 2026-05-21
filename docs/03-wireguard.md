@@ -1,69 +1,51 @@
-# 03 - WireGuard VPN
+# 03 - WireGuard
 
-## Generate Server Keys
+WireGuard is fully managed by OpenTofu. Node keys are generated automatically. The only manual step is generating your laptop keypair and adding the public key to tfvars before `tofu apply`.
 
-```bash
-wg genkey | tee /etc/wireguard/privatekey | wg pubkey > /etc/wireguard/publickey
-chmod 600 /etc/wireguard/privatekey
-```
-
-## Configure WireGuard
-
-Edit the WireGuard config
+## Generate Laptop Keypair (one-time)
 
 ```bash
-nano /etc/wireguard/wg0.conf
+wg genkey | tee ~/.config/wireguard/homelab.key | wg pubkey
 ```
 
-Server (`10.25.0.1`):
+Copy the public key into `opentofu/infrastructure/terraform.tfvars`:
 
-```ini
-[Interface]
-Address = 10.25.0.1/24
-PrivateKey = <server_private_key>
-ListenPort = 51820
-
-# MacBook
-[Peer]
-PublicKey = <mac_public_key>
-AllowedIPs = 10.25.0.2/32
+```hcl
+laptop_wireguard = {
+  public_key = "<your-public-key>"
+  address    = "10.25.0.100/32"
+}
 ```
 
-MacBook (`10.25.0.2`):
+Keep the private key file — you'll need it in the next step.
 
-```ini
-[Interface]
-Address = 10.25.0.2/24
-PrivateKey = <mac_private_key>
+## Get the Laptop Config
 
-[Peer]
-PublicKey = <server_public_key>
-Endpoint = <hetzner_server_ip>:51820
-AllowedIPs = 10.25.0.0/24, 10.50.0.0/24
-PersistentKeepalive = 25
-```
-
-## Start the Tunnel
+After `tofu apply`:
 
 ```bash
-wg-quick up wg0
-# or
-wg-quick down wg0 && wg-quick up wg0
+tofu output -raw wireguard_laptop_config > ~/.config/wireguard/homelab.conf
 ```
 
-## Hetzner Firewall
+Replace the private key placeholder:
 
-Lock down the Hetzner firewall — only allow:
+```bash
+PRIVKEY=$(cat ~/.config/wireguard/homelab.key)
+sed -i '' "s|REPLACE_WITH_LAPTOP_PRIVATE_KEY|$PRIVKEY|" ~/.config/wireguard/homelab.conf
+```
 
-| Protocol | Port  | Purpose   |
-| -------- | ----- | --------- |
-| UDP      | 51820 | WireGuard |
-| ICMP     | -     | Ping      |
+## Bring Up the Tunnel
 
-Open SSH temporarily if you need to recover from a broken VPN config:
+```bash
+sudo wg-quick up ~/.config/wireguard/homelab.conf
+```
 
-| Protocol | Port  | Purpose   |
-| -------- | ----- | --------- |
-| TCP      | 22    | SSH       |
-| UDP      | 51820 | WireGuard |
-| ICMP     | -     | Ping      |
+Or import into the [WireGuard Mac App](https://apps.apple.com/app/wireguard/id1451685025) and toggle it on.
+
+## Verify
+
+```bash
+sudo wg show
+```
+
+Each node should appear as a peer with a recent `latest handshake`.
